@@ -1,46 +1,64 @@
-import java.nio.ByteBuffer;
+import java.util.Random;
 
 public class Individual {
-	private byte[] gen;
-	private static int defaultGenLength = 8;
-	private long valueFromBytes;
-	private int valueInPattern;
-
+	private String gens;
+	private int value;
+	private int adaptationValue;
 	public Individual() {
-		gen=new byte[defaultGenLength];
-		generateIndividual();
-		setValueFromBytes();
+		generateValue();
+		createGens();
+		calculateAdaptationValue();
 	}
-	public void generateIndividual() {
-		 for (int i = 0; i < defaultGenLength; i++) {
-	            byte gene = (byte) Math.round(Math.random());
-	            gen [i] = gene;
-	        }
+	public Individual(Individual individual) {
+		this.gens=individual.getGens();
+		this.value=individual.getValue();
+		this.adaptationValue=individual.getAdaptationValue();
 	}
-	
-	public void setValueFromBytes() {
-		for (int i=0; i<gen.length; i++) {
-			System.out.println(Math.pow((double)gen[i]*10,(double)i));
+	private void calculateAdaptationValue() {
+		adaptationValue=(int) (2+(Math.pow(value, 2)+1));
+	}
+	private void generateValue() {
+		Random rand=new Random();
+		this.value=rand.nextInt(127);
+	}
+	private void createGens() {
+		this.gens=Integer.toBinaryString(value);
+		while(gens.length()<7) {
+			gens="0"+gens;
 		}
-		
 	}
-	public long getValueFromBytes() {
-		return valueFromBytes;
+	public int getAdaptationValue() {
+		return adaptationValue;
 	}
-	public byte getGene(int index) {
-		return gen[index];
-	}
-
-	public Individual getIndividual() {
-		return this;
-	}
-
-	@Override
-	public String toString() {
-		String gens="";
-		for (int i=0; i<gen.length; i++) {
-			gens+=gen[i];
-		}
+	public String getGens() {
 		return gens;
+	}
+	public int getValue() {
+		return value;
+	}
+	public static void swapGens(Individual ind1, Individual ind2, int lopus) {
+		String temp1=ind1.getGens().substring(lopus);
+		String temp2=ind2.getGens().substring(lopus);
+		ind1.setGens(ind1.getGens().substring(0, lopus)+temp2);
+		ind2.setGens(ind2.getGens().substring(0, lopus)+temp1);
+	}
+	public void setGens(String gens) {
+		this.gens = gens;
+	}
+	private void mutate(int mutationIndex, char gen) {
+		StringBuilder builder = new StringBuilder(gens);
+        builder.setCharAt(mutationIndex, gen);
+        gens=builder.toString();
+        value = Integer.parseInt(gens, 2);
+        calculateAdaptationValue();
+	}
+	public void inverseGens(int mutationIndex) {
+		char gen=gens.charAt(mutationIndex);
+		if(gen==0) {
+			mutate(mutationIndex, '1');
+		}
+		else if(gen==1) {
+			mutate(mutationIndex, '0');
+		}
 	}
 }

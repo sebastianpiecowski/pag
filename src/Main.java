@@ -1,12 +1,17 @@
+import java.util.List;
 
 public class Main {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		Population pop=new Population(50);
-		System.out.println(pop.toString());
-		System.out.println(pop.getIndividual(0).getValueFromBytes());
-		System.out.println(pop.getIndividual(5).getValueFromBytes());
+		List<Individual> lastPopulation=GA.start(20, 90, 50);
+		toString(lastPopulation);
+	}
+	private static void toString(List<Individual> population) {
+		String result = "";
+		for (Individual ind : population) {
+			result+=ind.getGens()+"\n";	
+		}
+		System.out.println(result);
 	}
 
 }
